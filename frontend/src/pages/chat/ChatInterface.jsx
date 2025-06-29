@@ -130,7 +130,7 @@ const ChatInterface = ({ initialChatId }) => {
     const fetchMessages = async () => {
       try {
         const { data } = await axios.get(
-          `${import.meta.env.VITE_API_URL}chat/message/${activeChat}`,
+          `${import.meta.env.VITE_API_URL}/chat/message/${activeChat}`,
           { withCredentials: true }
         );
         
@@ -169,7 +169,7 @@ const ChatInterface = ({ initialChatId }) => {
 
     try {
       await axios.post(
-        `${import.meta.env.VITE_API_URL}chat/message`,
+        `${import.meta.env.VITE_API_URL}/chat/message`,
         {
           content: newMessage,
           chatId: activeChat,
