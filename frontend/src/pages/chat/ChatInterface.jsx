@@ -87,7 +87,7 @@ const ChatInterface = ({ initialChatId }) => {
       setError(null);
       try {
         const { data } = await axios.get(
-          `${import.meta.env.VITE_API_URL}chat`,
+          `${import.meta.env.VITE_API_URL}/chat`,
           { withCredentials: true }
         );
 
