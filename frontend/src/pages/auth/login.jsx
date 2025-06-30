@@ -23,15 +23,20 @@ function AuthLogin() {
     setLoading(true)
 
     try {
-      const response = await dispatch(loginUser(formData)).unwrap()
-      console.log("Full Login Response:", response)
+    const response = await dispatch(loginUser(formData)).unwrap()
+    console.log("Full Login Response:", response)
+    
+    // Store token in localStorage as mobile fallback
+    if (response.token) {
+      localStorage.setItem('authToken', response.token);
+    }
 
-      toast({
-        title: "Login Successful",
-        description: "You have successfully logged in.",
-        status: "success",
-      })
-    } catch (error) {
+    toast({
+      title: "Login Successful",
+      description: "You have successfully logged in.",
+      status: "success",
+    })
+  } catch (error) {
       console.error("Login Error:", error)
       toast({
         title: "Login Failed",

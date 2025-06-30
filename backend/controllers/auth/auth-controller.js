@@ -136,10 +136,10 @@ const loginUser = async (req, res) => {
         return res
         .cookie('token', token, {
             httpOnly: true,
-            secure: isProduction,                            // HTTPS only in production
-            sameSite: isProduction ? 'none' : 'lax',         // 'none' for cross-site (e.g. Railway frontend/backend)
-            maxAge: 60 * 60 * 1000,                          // 1 hour
-            domain: isProduction ? '.railway.app' : undefined // Allow subdomains in production
+            secure: isProduction,                            
+            sameSite: isProduction ? 'none' : 'lax',         
+            maxAge: 60 * 60 * 1000,                          
+            domain: isProduction ? '.railway.app' : undefined
         })
         .json({
             success: true,
