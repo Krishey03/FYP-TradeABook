@@ -139,7 +139,7 @@ const loginUser = async (req, res) => {
             secure: isProduction,                            
             sameSite: isProduction ? 'none' : 'lax',         
             maxAge: 60 * 60 * 1000,                          
-            domain: isProduction ? process.env.COOKIE_DOMAIN || '.railway.app' : undefined,
+            // domain: isProduction ? process.env.COOKIE_DOMAIN || '.railway.app' : undefined,
             path: '/', // Ensure path is set
         })
         .json({
