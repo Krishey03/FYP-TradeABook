@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { logoutUser } from "@/store/auth-slice";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import InitiateChatButton from "@/components/chat/InitiateChatButton";
+import useMessageDropdown from "@/hooks/useMessageDropdown";
 
 function MenuItems({ closeMenu }) {
   const location = useLocation();
@@ -49,68 +50,17 @@ function MenuItems({ closeMenu }) {
   );
 }
 
+// In your header.jsx
 function MessageDropdown() {
-  const { user } = useSelector((state) => state.auth);
-  const { chats, unreadCount, fetchChats } = useChat();
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const socket = useRef();
-
-  useEffect(() => {
-    // Initialize socket connection
-socket.current = io(import.meta.env.VITE_API_URL, {  // Changed from process.env to import.meta.env
-      withCredentials: true,
-      transports: ['websocket']
-    });
-
-    // Listen for new messages
-    socket.current.on('new_message', (message) => {
-      fetchChats(); // Refresh chat list when new message arrives
-    });
-
-    return () => {
-      socket.current.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    const loadChats = async () => {
-      setIsLoading(true);
-      try {
-        await fetchChats();
-      } catch (error) {
-        console.error('Error loading chats:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadChats();
-  }, [fetchChats]);
-
-  const handleViewAll = () => {
-    navigate('/chat');
-  };
-
-  const handleChatClick = (chatId) => {
-    navigate(`/chat/${chatId}`);
-  };
-
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } else if (diffDays === 1) {
-      return 'Yesterday';
-    } else if (diffDays < 7) {
-      return date.toLocaleDateString([], { weekday: 'short' });
-    } else {
-      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-    }
-  };
+  const {
+    isLoading,
+    recentChats,
+    unreadCount,
+    user,
+    formatTime,
+    handleViewAll,
+    handleChatClick
+  } = useMessageDropdown();
 
   return (
     <DropdownMenu>
@@ -139,13 +89,13 @@ socket.current = io(import.meta.env.VITE_API_URL, {  // Changed from process.env
               <div className="flex justify-center py-4">
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-emerald-500"></div>
               </div>
-            ) : chats.length === 0 ? (
+            ) : recentChats.length === 0 ? (
               <div className="text-center py-4 text-sm text-slate-500">
                 No messages yet
               </div>
             ) : (
-              chats.slice(0, 3).map(chat => {
-                const otherUser = chat.members.find(member => member._id !== user._id);
+              recentChats.map(chat => {
+                const otherUser = chat.members?.find(member => member._id !== user._id);
                 const lastMessage = chat.lastMessage;
                 const hasUnread = chat.unreadCount > 0;
                 
@@ -168,7 +118,7 @@ socket.current = io(import.meta.env.VITE_API_URL, {  // Changed from process.env
                       </p>
                       <p className="text-xs text-slate-500 truncate">
                         {lastMessage 
-                          ? lastMessage.sender._id === user._id 
+                          ? lastMessage.sender?._id === user._id 
                             ? `You: ${lastMessage.content}` 
                             : lastMessage.content
                           : 'No messages yet'}

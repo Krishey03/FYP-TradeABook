@@ -13,7 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BookOpen, Clock, MessageCircle, RefreshCw, ArrowRight, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import api from "@/api/axios";
-import ShoppingHeader from "./header"; // Import the header component
+import ShoppingHeader from "./header";
+import { useChat } from "@/components/chat/ChatContext";
 
 export default function BookDetailsPage() {
   const { id } = useParams();
@@ -38,6 +39,8 @@ export default function BookDetailsPage() {
   const timeLeft = useTimeLeft(productDetails?.endTime);
   const isCurrentUserSeller = user?.email === productDetails?.sellerEmail;
   const isBiddingEnded = timeLeft === "Bidding Ended";
+
+  const [isStartingChat, setIsStartingChat] = useState(false);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -136,15 +139,42 @@ export default function BookDetailsPage() {
     }
   };
 
-  const handleChatWithSeller = () => {
-    const phoneNumber = productDetails?.sellerPhone;
-    if (!phoneNumber) {
-      toast.error("Seller's phone number is not available.");
+  const handleChatWithSeller = async () => {
+    if (!user) {
+      toast.error("Please login to chat with the seller");
+      navigate("/auth/login");
       return;
     }
-    const message = encodeURIComponent(`Hello, I'm interested in your book: ${productDetails?.title}`);
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-    window.open(whatsappUrl, "_blank");
+
+    if (!productDetails?.sellerEmail) {
+      toast.error("Seller information not available");
+      return;
+    }
+
+    setIsStartingChat(true);
+    try {
+      console.log("Initiating chat with:", productDetails.sellerEmail);
+      const response = await api.post('/chat/initiate', {
+        email: productDetails.sellerEmail
+      }, { withCredentials: true });
+      
+      console.log("Chat initiation response:", response.data);
+      
+      if (response.data?.chat?._id) {
+        navigate(`/chat/${response.data.chat._id}`);
+      } else if (response.data?._id) {
+        navigate(`/chat/${response.data._id}`);
+      } else {
+        throw new Error("Invalid chat response format");
+      }
+    } catch (error) {
+      console.error("Chat initiation error:", error);
+      toast.error(error.response?.data?.message || 
+                error.message || 
+                "Failed to start chat with seller");
+    } finally {
+      setIsStartingChat(false);
+    }
   };
 
   if (loading) {
@@ -271,36 +301,45 @@ export default function BookDetailsPage() {
               )}
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              {isCurrentUserSeller ? (
-                <Button
-                  onClick={() => navigate("/shop/uploads")}
-                  className="bg-teal-600 hover:bg-teal-700"
-                >
-                  View My Listings
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    onClick={handleChatWithSeller}
-                    className="bg-green-600 hover:bg-green-700"
-                    disabled={isBiddingEnded}
-                  >
+        <div className="flex flex-col sm:flex-row gap-4 pt-4">
+          {isCurrentUserSeller ? (
+            <Button
+              onClick={() => navigate("/shop/uploads")}
+              className="bg-teal-600 hover:bg-teal-700"
+            >
+              View My Listings
+            </Button>
+          ) : (
+            <>
+              <Button
+                onClick={handleChatWithSeller}
+                className="bg-green-600 hover:bg-green-700"
+                disabled={isBiddingEnded || isStartingChat}
+              >
+                {isStartingChat ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Starting chat...
+                  </>
+                ) : (
+                  <>
                     <MessageCircle className="mr-2 h-4 w-4" />
-                    Chat with Seller
-                  </Button>
-                  <Button
-                    onClick={() => setIsExchangeSidebarOpen(true)}
-                    variant="outline"
-                    className="border-purple-600 text-purple-600 hover:bg-purple-50"
-                    disabled={isBiddingEnded}
-                  >
-                    <RefreshCw className="mr-2 h-4 w-4" />
-                    Offer Exchange
-                  </Button>
-                </>
-              )}
-            </div>
+                    Message Seller
+                  </>
+                )}
+              </Button>
+              <Button
+                onClick={() => setIsExchangeSidebarOpen(true)}
+                variant="outline"
+                className="border-purple-600 text-purple-600 hover:bg-purple-50"
+                disabled={isBiddingEnded}
+              >
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Offer Exchange
+              </Button>
+            </>
+          )}
+        </div>
           </div>
         </div>
       </main>
