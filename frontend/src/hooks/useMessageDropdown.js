@@ -1,33 +1,29 @@
 // src/hooks/useMessageDropdown.js
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useChat } from "@/components/chat/ChatContext";
-import { io } from "socket.io-client";
 import { useSelector } from "react-redux";
 
 export default function useMessageDropdown() {
   const { user } = useSelector((state) => state.auth);
-  const { chats, unreadCount, fetchChats } = useChat();
+  const { chats, unreadCount, fetchChats, socket: contextSocket } = useChat();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const socket = useRef();
 
   useEffect(() => {
-    // Initialize socket connection
-    socket.current = io(import.meta.env.VITE_API_URL, {
-      withCredentials: true,
-      transports: ['websocket']
-    });
+    if (!contextSocket) return;
 
     // Listen for new messages
-    socket.current.on('new_message', () => {
+    const handleNewMessage = () => {
       fetchChats(); // Refresh chat list when new message arrives
-    });
+    };
+
+    contextSocket.on('new_message', handleNewMessage);
 
     return () => {
-      socket.current.disconnect();
+      contextSocket.off('new_message', handleNewMessage);
     };
-  }, []);
+  }, [contextSocket, fetchChats]);
 
   useEffect(() => {
     const loadChats = async () => {
@@ -61,8 +57,14 @@ export default function useMessageDropdown() {
     }
   };
 
-  const handleViewAll = () => {
-    navigate('/chat');
+  const handleViewAll = async () => {
+    try {
+      await fetchChats(); // Wait for chats to load
+      navigate('/chat');
+    } catch (error) {
+      console.error('Failed to load chats:', error);
+      navigate('/chat'); // Still navigate even if there's an error
+    }
   };
 
   const handleChatClick = (chatId) => {

@@ -24,6 +24,7 @@ import useMessageDropdown from "@/hooks/useMessageDropdown";
 
 function MenuItems({ closeMenu }) {
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <nav className="flex items-center gap-4 sm:gap-4 md:gap-6">
@@ -53,101 +54,30 @@ function MenuItems({ closeMenu }) {
 // In your header.jsx
 function MessageDropdown() {
   const {
-    isLoading,
-    recentChats,
-    unreadCount,
-    user,
-    formatTime,
     handleViewAll,
-    handleChatClick
+    isLoading,
+    unreadCount,
   } = useMessageDropdown();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative rounded-full hover:bg-emerald-50">
-          <MessageCircle className="h-5 w-5 text-slate-600" />
-          {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-xs text-white">
-              {unreadCount}
-            </span>
-          )}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="w-72 bg-white border shadow-lg rounded-lg p-1 animate-in fade-in-50 zoom-in-95"
-      >
-        <div className="p-2">
-          <div className="px-2 py-1.5 text-sm font-medium text-center text-slate-700">
-            Messages
-          </div>
-          <DropdownMenuSeparator />
-          
-          <div className="max-h-60 overflow-y-auto">
-            {isLoading ? (
-              <div className="flex justify-center py-4">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-emerald-500"></div>
-              </div>
-            ) : recentChats.length === 0 ? (
-              <div className="text-center py-4 text-sm text-slate-500">
-                No messages yet
-              </div>
-            ) : (
-              recentChats.map(chat => {
-                const otherUser = chat.members?.find(member => member._id !== user._id);
-                const lastMessage = chat.lastMessage;
-                const hasUnread = chat.unreadCount > 0;
-                
-                return (
-                  <DropdownMenuItem 
-                    key={chat._id}
-                    className={`flex items-start gap-3 p-2 rounded-md cursor-pointer hover:bg-slate-50 focus:bg-slate-50 transition-colors ${
-                      hasUnread ? 'bg-blue-50' : ''
-                    }`}
-                    onClick={() => handleChatClick(chat._id)}
-                  >
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-slate-200 text-slate-700">
-                        {otherUser?.userName?.charAt(0).toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {otherUser?.userName || 'Unknown User'}
-                      </p>
-                      <p className="text-xs text-slate-500 truncate">
-                        {lastMessage 
-                          ? lastMessage.sender?._id === user._id 
-                            ? `You: ${lastMessage.content}` 
-                            : lastMessage.content
-                          : 'No messages yet'}
-                      </p>
-                    </div>
-                    {lastMessage && (
-                      <span className="text-xs text-slate-400 whitespace-nowrap">
-                        {formatTime(lastMessage.createdAt)}
-                      </span>
-                    )}
-                    {hasUnread && (
-                      <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-emerald-500"></span>
-                    )}
-                  </DropdownMenuItem>
-                );
-              })
-            )}
-          </div>
-          
-          <DropdownMenuSeparator />
-          <DropdownMenuItem 
-            className="flex items-center justify-center p-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50"
-            onClick={handleViewAll}
-          >
-            View all messages
-          </DropdownMenuItem>
-        </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button variant="ghost" 
+    size="icon" 
+    className="relative rounded-full bg-white hover:bg-emerald-50"
+    onClick={handleViewAll}
+    disabled={isLoading}>
+      {isLoading ? (
+    <div className="animate-spin rounded-full h-5 w-5 border-2 border-emerald-600 border-t-transparent" />
+  ) : (
+    <>
+      <MessageCircle className="h-5 w-5 text-slate-600" />
+      {unreadCount > 0 && (
+        <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+          {unreadCount}
+        </span>
+      )}
+    </>
+  )}
+    </Button>
   );
 }
 
@@ -164,7 +94,7 @@ function HeaderRightContent() {
   function confirmLogout() {
     setShowLogoutConfirm(false);
     dispatch(logoutUser());
-    navigate("/");
+    navigate("/auth/login");
   }
 
   function cancelLogout() {
