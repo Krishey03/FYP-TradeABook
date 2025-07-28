@@ -4,6 +4,7 @@ import axios from "axios"
 import { useSelector } from "react-redux"
 import { Send, User } from "lucide-react"
 import InitiateChatButton from "@/components/chat/InitiateChatButton"
+import PropTypes from 'prop-types';
 
 const ChatInterface = ({ initialChatId }) => {
   const { user } = useSelector((state) => state.auth)
@@ -19,6 +20,8 @@ const ChatInterface = ({ initialChatId }) => {
   const messagesEndRef = useRef(null)
   const messagesContainerRef = useRef(null)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
 
   // Improved scroll function with useCallback
   const scrollToBottom = useCallback((behavior = "smooth") => {
@@ -104,38 +107,43 @@ const ChatInterface = ({ initialChatId }) => {
   }, [user?._id, activeChat, chats.length])
 
   // Fetch chats
-  useEffect(() => {
+useEffect(() => {
     const fetchChats = async () => {
-      setIsLoading(true)
-      setError(null)
+      setIsLoading(true);
+      setError(null);
       try {
-        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/chat`, { withCredentials: true })
-        const chats = Array.isArray(data?.data) ? data.data : Array.isArray(data?.chats) ? data.chats : []
-
+        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/chat`, { 
+          withCredentials: true 
+        });
+        
+        const chats = Array.isArray(data?.data) ? data.data : Array.isArray(data?.chats) ? data.chats : [];
         const validChats = chats.filter(
           (chat) => Array.isArray(chat.members) && chat.members.some((member) => member && member._id !== user?._id),
-        )
+        );
 
-        setChats(validChats)
-        const validInitialChat = validChats.some((c) => c._id === initialChatId)
-        if (initialChatId && validInitialChat) {
-          setActiveChat(initialChatId)
-        } else if (validChats.length > 0 && !activeChat) {
-          setActiveChat(validChats[0]._id)
+        setChats(validChats);
+        
+        // Set active chat logic
+        if (validChats.length > 0) {
+          // Priority 1: Use initialChatId if valid
+          // Priority 2: Use first chat if no initialChatId
+          const chatToSet = validChats.find(c => c._id === initialChatId) || validChats[0];
+          setActiveChat(chatToSet._id);
         }
+        
+        setInitialLoadComplete(true);
       } catch (error) {
-        console.error("Error fetching chats:", error)
-        setError("Failed to load chats. Please try again.")
-        setChats([])
+        console.error("Error fetching chats:", error);
+        setError("Failed to load chats. Please try again.");
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
     if (user?._id) {
-      fetchChats()
+      fetchChats();
     }
-  }, [user?._id, initialChatId, activeChat])
+  }, [user?._id, initialChatId]);
 
   // Fetch messages
   useEffect(() => {
@@ -205,7 +213,8 @@ const ChatInterface = ({ initialChatId }) => {
   const renderMember = (member) => {
     if (!member) return null
 
-    return (
+      if (!initialLoadComplete){    return (
+        
       <div className="flex items-center gap-2 sm:gap-3">
         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium text-sm">
           {member.userName?.charAt(0).toUpperCase() || "?"}
@@ -215,7 +224,7 @@ const ChatInterface = ({ initialChatId }) => {
           {member._id === user?._id && <p className="text-xs text-gray-500">(You)</p>}
         </div>
       </div>
-    )
+    )}
   }
 
   const renderMessage = (message) => {
@@ -443,5 +452,9 @@ const ChatInterface = ({ initialChatId }) => {
     </div>
   )
 }
+
+ChatInterface.propTypes = {
+  initialChatId: PropTypes.string
+};
 
 export default ChatInterface

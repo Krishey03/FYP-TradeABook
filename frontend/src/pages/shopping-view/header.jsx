@@ -1,13 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { shoppingViewHeaderMenuItems } from "@/config";
 import { ShoppingCart, LogOut, UserRound, SquareStack, ScrollText, MessageCircle } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import PropTypes from 'prop-types';
+
 import "@fontsource/inspiration";
 import "@fontsource/inika";
-import { io } from "socket.io-client";
-import { useChat } from "../../components/chat/ChatContext";
 
 import {
   DropdownMenu,
@@ -320,5 +320,9 @@ function ShoppingHeader() {
     </>
   );
 }
+
+MenuItems.propTypes = {
+  closeMenu: PropTypes.func
+};
 
 export default ShoppingHeader;
