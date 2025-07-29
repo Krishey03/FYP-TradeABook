@@ -219,3 +219,51 @@ exports.initiateChat = async (req, res) => {
     });
   }
 };
+
+exports.deleteChat = async (req, res) => {
+  const { chatId } = req.params;
+
+  if (!chatId) {
+    return res.status(400).json({
+      success: false,
+      message: "Chat ID is required"
+    });
+  }
+
+  try {
+    // Verify the chat exists and user is a member
+    const chat = await Chat.findOne({
+      _id: chatId,
+      members: { $in: [req.user._id] }
+    });
+
+    if (!chat) {
+      return res.status(404).json({
+        success: false,
+        message: "Chat not found or unauthorized"
+      });
+    }
+
+    // Delete all messages associated with this chat
+    await Message.deleteMany({ chat: chatId });
+
+    // Delete the chat
+    await Chat.findByIdAndDelete(chatId);
+
+    // Emit socket event to notify other users
+    const io = req.app.get('io');
+    io.to(chatId).emit('chat_deleted', { chatId });
+
+    res.status(200).json({
+      success: true,
+      message: "Chat deleted successfully"
+    });
+  } catch (err) {
+    console.error("Delete chat error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: err.message
+    });
+  }
+};

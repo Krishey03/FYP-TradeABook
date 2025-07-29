@@ -11,7 +11,7 @@ import ShoppingProductTile from "./product-tile";
 import Footer from './footer'
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Users, TrendingUp, ArrowRight } from "lucide-react";
+import { BookOpen, Users, TrendingUp, ArrowRight, Star, Award, Heart, Shield } from "lucide-react";
 
 function ShoppingHome() {
   const dispatch = useDispatch();
@@ -27,103 +27,164 @@ function ShoppingHome() {
   return (
     <Fragment>
       {/* Hero Section */}
-      <div className="relative w-full h-[80vh] overflow-hidden">
-        <img
-          src={HeroImage}
-          alt="Book exchange banner"
-          className="w-full h-full object-cover"
-        />
+      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src={HeroImage}
+            alt="Book exchange banner"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/50"></div>
+        </div>
 
-        {/* Hero Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-white max-w-4xl text-center px-6">
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 font-nunito leading-tight">
-                Swap Stories, Not Just Pages
-              </h1>
-              <p className="text-xl md:text-2xl mb-8 font-nunito text-gray-200 max-w-2xl mx-auto">
-                Discover affordable books, bid or exchange with ease, and join a community of passionate readers.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 text-lg shadow-lg"
-                  onClick={() => navigate("/shop/uploads")}
-                >
-                  Upload Book
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-gray-900 font-semibold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 text-lg"
-                  onClick={() => navigate("/shop/listing")}
-                >
-                  Browse Books
-                </Button>
-              </div>
+        {/* Hero Content */}
+        <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6">
+          <div className="mb-8">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-light mb-4 leading-tight tracking-wide">
+              Discover Your Next
+              <span className="block font-semibold mt-2">Great Read</span>
+            </h1>
+          </div>
+          
+          <p className="text-lg md:text-xl lg:text-2xl font-light mb-10 max-w-3xl mx-auto leading-relaxed text-gray-200">
+            Where stories find new homes and readers discover their next adventure. 
+            Join our community of passionate book lovers.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+            <Button
+              className="bg-white text-black hover:bg-gray-100 font-medium px-8 py-4 text-base rounded-md transition-all duration-300 transform hover:scale-105 shadow-lg"
+              onClick={() => navigate("/shop/uploads")}
+            >
+              Upload Book
+            </Button>
+            <Button
+              variant="outline"
+              className="border-white text-black hover:bg-white hover:text-black font-medium px-8 py-4 text-base rounded-md transition-all duration-300 transform hover:scale-105"
+              onClick={() => navigate("/shop/listing")}
+            >
+              Explore Books
+            </Button>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold mb-1">10K+</div>
+              <div className="text-gray-300 text-xs uppercase tracking-wide">Books Traded</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold mb-1">5K+</div>
+              <div className="text-gray-300 text-xs uppercase tracking-wide">Happy Readers</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold mb-1">100%</div>
+              <div className="text-gray-300 text-xs uppercase tracking-wide">Secure Trading</div>
             </div>
           </div>
         </div>
-      </div>
-
-
+      </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <div className="text-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100">
-              <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="w-8 h-8 text-blue-600" />
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-light mb-4 text-gray-900">
+              Why Choose
+              <span className="block font-semibold">TradeABook</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Experience the future of book trading with our innovative platform designed for passionate readers.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-gray-200 transition-colors">
+                <BookOpen className="w-8 h-8 text-gray-800" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 font-julius text-gray-800">Book Exchange</h3>
-              <p className="text-gray-600">Trade your books with other readers and discover new stories.</p>
+              <h3 className="text-lg font-semibold mb-3 text-gray-900">Smart Exchange</h3>
+              <p className="text-gray-600 leading-relaxed text-sm">
+                Intelligent matching system connects you with the perfect book trades.
+              </p>
             </div>
-            <div className="text-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100">
-              <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-blue-600" />
+
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-gray-200 transition-colors">
+                <Users className="w-8 h-8 text-gray-800" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 font-julius text-gray-800">Community</h3>
-              <p className="text-gray-600">Join a community of passionate readers and book lovers.</p>
+              <h3 className="text-lg font-semibold mb-3 text-gray-900">Global Community</h3>
+              <p className="text-gray-600 leading-relaxed text-sm">
+                Connect with readers worldwide and discover diverse literary perspectives.
+              </p>
             </div>
-            <div className="text-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100">
-              <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="w-8 h-8 text-blue-600" />
+
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-gray-200 transition-colors">
+                <TrendingUp className="w-8 h-8 text-gray-800" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 font-julius text-gray-800">Affordable</h3>
-              <p className="text-gray-600">Find books at great prices through bidding and exchanges.</p>
+              <h3 className="text-lg font-semibold mb-3 text-gray-900">Value Trading</h3>
+              <p className="text-gray-600 leading-relaxed text-sm">
+                Get maximum value for your books through our advanced bidding system.
+              </p>
+            </div>
+
+            <div className="text-center group">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-gray-200 transition-colors">
+                <Shield className="w-8 h-8 text-gray-800" />
+              </div>
+              <h3 className="text-lg font-semibold mb-3 text-gray-900">Secure Platform</h3>
+              <p className="text-gray-600 leading-relaxed text-sm">
+                Your safety is our priority with verified users and secure transactions.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Latest Books Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-julius mb-4">Latest Books</h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Discover the most recently uploaded books from our community
+            <h2 className="text-3xl md:text-4xl font-light mb-4 text-gray-900">
+              Latest
+              <span className="block font-semibold">Additions</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Discover the most recently uploaded books from our passionate community of readers.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
             {productList && productList.length > 0
               ? productList.slice(-3).map(productItem => (
                   <ShoppingProductTile key={productItem.id} product={productItem} />
                 ))
               : (
                 <div className="col-span-full text-center py-12">
-                  <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500 text-lg">No books available yet.</p>
-                  <p className="text-gray-400">Be the first to upload a book!</p>
+                  <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <BookOpen className="w-10 h-10 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">No books available yet</h3>
+                  <p className="text-gray-600 mb-6">Be the first to share your favorite reads with the community.</p>
+                  <Button
+                    onClick={() => navigate("/shop/uploads")}
+                    className="bg-gray-900 hover:bg-black text-white font-medium px-6 py-3 rounded-md transition-all duration-300"
+                  >
+                    Upload Your First Book
+                  </Button>
                 </div>
               )}
           </div>
+
           {productList && productList.length > 3 && (
-            <div className="text-center mt-8">
+            <div className="text-center">
               <Button
                 onClick={() => navigate("/shop/listing")}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+                className="bg-gray-900 hover:bg-black text-white font-medium px-8 py-4 text-base rounded-md transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
-                View All Books
+                Explore All Books
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
@@ -132,44 +193,108 @@ function ShoppingHome() {
       </section>
 
       {/* About Section */}
-      <section className="py-16 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row items-center gap-12">
-            <div className="lg:w-1/2">
-              <img 
-                src={bannerThree} 
-                alt="Book Community" 
-                className="w-full max-w-md mx-auto rounded-lg shadow-2xl"
-              />
-            </div>
-            <div className="lg:w-1/2 text-center lg:text-left">
-              <h2 className="text-4xl font-julius mb-6 text-white">
-                Join Our Book Community
+      <section className="py-20 bg-gray-900 text-white">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-light mb-6">
+                A Community
+                <span className="block font-semibold">Built on Stories</span>
               </h2>
-              <p className="font-nunito text-lg text-blue-100 leading-relaxed mb-6">
-                TradeABook is more than just a platform - it's a community of passionate readers who believe in the power of sharing knowledge. Whether you're looking to discover new authors, find rare editions, or simply connect with fellow book lovers, our platform provides the perfect space for meaningful book exchanges.
+              <p className="text-lg text-gray-300 leading-relaxed mb-6">
+                TradeABook is more than just a platform - it's a celebration of literature and human connection. 
+                We believe every book has a story to tell, and every reader has a story to share.
               </p>
-              <p className="font-nunito text-lg text-blue-100 leading-relaxed mb-8">
-                Our mission is to make reading accessible to everyone while fostering a sustainable approach to book ownership. Join thousands of readers who have already discovered the joy of book trading.
+              <p className="text-lg text-gray-300 leading-relaxed mb-8">
+                Our mission is to create a sustainable ecosystem where knowledge flows freely, 
+                stories find new homes, and readers discover their next great adventure.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   onClick={() => navigate("/shop/listing")}
-                  className="bg-white hover:bg-gray-100 text-blue-900 font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  className="bg-white text-black hover:bg-gray-100 font-medium px-6 py-3 rounded-md transition-all duration-300"
                 >
-                  Start Trading
+                  Join the Community
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-blue-900 font-semibold px-6 py-3 rounded-lg transition-all duration-300"
+                  onClick={() => navigate("/shop/about")}
+                  className="border-white text-black hover:bg-white hover:text-black font-medium px-6 py-3 rounded-md transition-all duration-300"
                 >
                   Learn More
                 </Button>
               </div>
             </div>
+
+            <div className="relative">
+              <img 
+                src={bannerThree} 
+                alt="Book Community" 
+                className="w-full h-80 object-cover rounded-lg shadow-2xl"
+              />
+              <div className="absolute -bottom-4 -left-4 bg-white text-black p-4 shadow-lg rounded-lg">
+                <div className="flex items-center gap-1 mb-1">
+                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                </div>
+                <p className="text-xs font-medium">Trusted by my friends :)</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-light mb-4 text-gray-900">
+              What Our
+              <span className="block font-semibold">Readers Say</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 border border-gray-200 hover:border-gray-300 transition-colors rounded-lg">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart className="w-6 h-6 text-gray-600" />
+              </div>
+              <p className="text-gray-600 mb-4 italic text-sm">
+                "TradeABook has completely transformed how I discover new authors. The community is amazing!"
+              </p>
+              <h4 className="font-semibold text-gray-900">Sarah Johnson</h4>
+              <p className="text-xs text-gray-500">Avid Reader</p>
+            </div>
+
+            <div className="text-center p-6 border border-gray-200 hover:border-gray-300 transition-colors rounded-lg">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Award className="w-6 h-6 text-gray-600" />
+              </div>
+              <p className="text-gray-600 mb-4 italic text-sm">
+                "The bidding system is brilliant! I've found rare editions I never thought I'd own."
+              </p>
+              <h4 className="font-semibold text-gray-900">Michael Chen</h4>
+              <p className="text-xs text-gray-500">Book Collector</p>
+            </div>
+
+            <div className="text-center p-6 border border-gray-200 hover:border-gray-300 transition-colors rounded-lg">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Star className="w-6 h-6 text-gray-600" />
+              </div>
+              <p className="text-gray-600 mb-4 italic text-sm">
+                "Finally, a platform that makes book trading simple and secure. Highly recommended!"
+              </p>
+              <h4 className="font-semibold text-gray-900">Emma Rodriguez</h4>
+              <p className="text-xs text-gray-500">Literature Student</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </Fragment>
   );

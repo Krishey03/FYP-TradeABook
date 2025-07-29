@@ -5,7 +5,8 @@ const {
   getUserChats, 
   sendMessage, 
   getMessages,
-  initiateChat
+  initiateChat,
+  deleteChat
 } = require('../../controllers/chat/message-controller');
 const { authMiddleware } = require('../../controllers/auth/auth-controller');
 
@@ -16,6 +17,7 @@ router.post('/', accessChat);
 router.get('/', getUserChats);
 router.post('/message', sendMessage);
 router.get('/message/:chatId', getMessages);
-router.post('/initiate', initiateChat); // Now protected by authMiddleware
+router.post('/initiate', initiateChat);
+router.delete('/:chatId', deleteChat);
 
 module.exports = router;

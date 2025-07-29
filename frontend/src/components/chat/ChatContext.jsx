@@ -62,6 +62,17 @@ const ChatProvider = ({ children }) => {
     }
   };
 
+  const deleteChat = async (chatId) => {
+    try {
+      await api.delete(`/chat/${chatId}`);
+      setChats((prev) => prev.filter(chat => chat._id !== chatId));
+      return true;
+    } catch (error) {
+      console.error('Error deleting chat:', error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     if (!user?._id) return;
 
@@ -72,51 +83,56 @@ const ChatProvider = ({ children }) => {
       });
     }
 
-    // Socket event handlers
-    const handleNewMessage = (message) => {
-      setChats((prevChats) => {
-        return prevChats.map((chat) => {
+    const currentSocket = socket.current;
+
+    currentSocket.on('connect', () => {
+      console.log('Connected to socket server');
+      currentSocket.emit('setup', user._id);
+    });
+
+    currentSocket.on('new_message', (message) => {
+      setChats((prev) => {
+        const updatedChats = prev.map(chat => {
           if (chat._id === message.chat._id) {
-            return {
-              ...chat,
-              lastMessage: message
-            };
+            return { ...chat, lastMessage: message };
           }
           return chat;
         });
+        return updatedChats;
       });
-    };
+    });
 
-    const handleNewChat = (newChat) => {
-      setChats((prevChats) => [newChat, ...prevChats]);
-    };
+    currentSocket.on('new_chat', (newChat) => {
+      setChats((prev) => [newChat, ...prev]);
+    });
 
-    // Set up socket event listeners
-    socket.current.on('new_message', handleNewMessage);
-    socket.current.on('new_chat', handleNewChat);
-
-    fetchChats();
+    currentSocket.on('chat_deleted', ({ chatId }) => {
+      setChats((prev) => prev.filter(chat => chat._id !== chatId));
+    });
 
     return () => {
-      if (socket.current) {
-        socket.current.off('new_message', handleNewMessage);
-        socket.current.off('new_chat', handleNewChat);
-        socket.current.disconnect();
-        socket.current = null;
+      if (currentSocket) {
+        currentSocket.off('connect');
+        currentSocket.off('new_message');
+        currentSocket.off('new_chat');
+        currentSocket.off('chat_deleted');
       }
     };
-  }, [user?._id, fetchChats]);
+  }, [user?._id]);
+
+  const value = {
+    chats,
+    unreadCount,
+    isLoading,
+    fetchChats,
+    initiateChat,
+    deleteChat,
+    socket: socket.current
+  };
 
   return (
     <ChatContext.Provider
-      value={{
-        chats,
-        unreadCount,
-        isLoading,
-        fetchChats,
-        initiateChat,
-        socket: socket.current
-      }}
+      value={value}
     >
       {children}
     </ChatContext.Provider>
