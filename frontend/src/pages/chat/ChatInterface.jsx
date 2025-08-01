@@ -357,7 +357,7 @@ const ChatInterface = ({ initialChatId }) => {
             <div className="relative">
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 bg-white hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <MoreVertical className="w-5 h-5 text-gray-600" />
               </button>
@@ -369,7 +369,7 @@ const ChatInterface = ({ initialChatId }) => {
                       setShowDeleteConfirm(true);
                       setShowDropdown(false);
                     }}
-                    className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 rounded-lg"
+                    className="block w-full px-4 py-2 text-left text-sm bg-white text-red-600 hover:bg-red-50 rounded-lg"
                   >
                     Delete chat
                   </button>

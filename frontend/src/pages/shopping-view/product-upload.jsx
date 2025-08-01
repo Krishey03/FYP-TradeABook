@@ -1,15 +1,16 @@
-import { Calendar } from "lucide-react"
+import { Calendar, CheckCircle2, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Progress } from "@/components/ui/progress"
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect, useState } from "react"
 import { addNewProduct } from "@/store/admin/products-slice"
 import ProductImageUpload from "@/components/admin-view/image-upload"
 import { Dialog } from "@/components/ui/dialog"
 import { DialogContent } from "@/components/ui/dialog"
-import { CheckCircle2 } from "lucide-react"
+import api from "@/api/axios"
 
 export default function ProductUpload() {
   const { user } = useSelector((state) => state.auth)
@@ -38,6 +39,10 @@ export default function ProductUpload() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploadSuccess, setUploadSuccess] = useState(false)
   const [uploadError, setUploadError] = useState(null)
+  const [showProgressDialog, setShowProgressDialog] = useState(false)
+  const [progressValue, setProgressValue] = useState(0)
+  const [progressMessage, setProgressMessage] = useState("")
+  const [imageUploaded, setImageUploaded] = useState(false)
 
   function handleInputChange(e) {
     const { id, value } = e.target
@@ -51,32 +56,82 @@ export default function ProductUpload() {
     e.preventDefault()
     setIsSubmitting(true)
     setUploadError(null)
+    setShowProgressDialog(true)
+    setProgressValue(0)
+    setProgressMessage("Preparing upload...")
     
-    if (!uploadedImageUrl) {
-      setUploadError("Please upload an image first")
+    if (!imageFile) {
+      setUploadError("Please select an image first")
       setIsSubmitting(false)
+      setShowProgressDialog(false)
       return
     }
 
     try {
+      // First, upload the image to Cloudinary
+      setProgressMessage("Uploading image to Cloudinary...")
+      setProgressValue(10)
+      
+      const imageData = new FormData();
+      imageData.append("my_file", imageFile);
+      
+      const imageResponse = await api.post(
+        "/admin/products/upload-image",
+        imageData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
+
+      if (!imageResponse?.data?.success) {
+        throw new Error("Failed to upload image");
+      }
+
+      const imageUrl = imageResponse.data.url;
+      setUploadedImageUrl(imageUrl);
+      setProgressValue(50)
+      setProgressMessage("Image uploaded successfully! Uploading your book...")
+
+      // Now upload the product data
       const productData = {
         ...formData,
-        image: uploadedImageUrl,
+        image: imageUrl,
         currentBid: formData.minBid,
       }
 
+      setProgressValue(75)
+      setProgressMessage("Uploading your book...")
+      
       const result = await dispatch(addNewProduct(productData)).unwrap()
       
-      if (result.success) {
-        setUploadSuccess(true)
-        // Reset form on success
-        setFormData(initialFormData)
-        setImageFile(null)
-        setUploadedImageUrl("")
-      }
+      // Complete progress
+      setProgressValue(100)
+      setProgressMessage("Upload completed!")
+      
+      // Wait a moment to show completion
+      setTimeout(() => {
+        setShowProgressDialog(false)
+        if (result.success) {
+          setUploadSuccess(true)
+          // Reset form on success
+          setFormData(initialFormData)
+          setImageFile(null)
+          setUploadedImageUrl("")
+          setImageUploaded(false)
+        }
+      }, 1000)
+      
     } catch (error) {
-      setUploadError(error.message || "Failed to upload product. Please try again.")
-      console.error("Upload error:", error)
+      setProgressValue(100)
+      setProgressMessage("Upload failed!")
+      
+      setTimeout(() => {
+        setShowProgressDialog(false)
+        setUploadError(error.message || "Failed to upload product. Please try again.")
+        console.error("Upload error:", error)
+      }, 1000)
     } finally {
       setIsSubmitting(false)
     }
@@ -88,7 +143,7 @@ export default function ProductUpload() {
       formData.author &&
       formData.description &&
       formData.minBid &&
-      uploadedImageUrl
+      imageFile
     )
   }
 
@@ -109,6 +164,20 @@ export default function ProductUpload() {
             >
               OK
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Progress Dialog */}
+      <Dialog open={showProgressDialog} onOpenChange={setShowProgressDialog}>
+        <DialogContent className="sm:max-w-md">
+          <div className="flex flex-col items-center text-center p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Uploading Product</h3>
+            <p className="text-gray-600 mb-4">{progressMessage}</p>
+            <div className="w-full mb-4">
+              <Progress value={progressValue} className="w-full" />
+            </div>
+            <p className="text-sm text-gray-500">{progressValue}%</p>
           </div>
         </DialogContent>
       </Dialog>

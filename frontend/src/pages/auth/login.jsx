@@ -40,7 +40,7 @@ function AuthLogin() {
       console.error("Login Error:", error)
       toast({
         title: "Login Failed",
-        description: error?.message || "Invalid email or password.",
+        description: "Invalid email or password. " + error?.message,
         status: "error",
       })
     } finally {

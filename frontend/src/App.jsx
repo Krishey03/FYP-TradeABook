@@ -22,13 +22,14 @@ import { checkAuth } from "./store/auth-slice";
 import { Skeleton } from "@/components/ui/skeleton";
 import PaymentSuccess from "./pages/paymentSuccess";
 import PaymentFailed from "./pages/paymentFailed";
-import TermsAndConditions from "./pages/terms";
+import TermsAndConditions from "./pages/Terms-and-conditions/Terms-and-conditions";
 import UserOrders from "./pages/shopping-view/orders";
 import BookDetailsPage from "./pages/shopping-view/book-details-page";
 import ProductUpload from "./pages/shopping-view/product-upload";
 import { ChatProvider } from "./components/chat/ChatContext";
 import ChatLayout from "./components/chat/ChatLayout";
 import ChatPage from "./components/chat/ChatPage";
+import NgrokConfig from "./components/common/ngrok-config";
 
 function App() {
   const { isAuthenticated, user, isLoading } = useSelector((state) => state.auth);
@@ -101,6 +102,9 @@ function App() {
           <Route path="/terms" element={<TermsAndConditions />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        
+        {/* Development helper for ngrok configuration */}
+        <NgrokConfig />
       </ChatProvider>
     </div>
   );

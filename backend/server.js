@@ -38,7 +38,15 @@ const allowedOrigins = [
   "https://tradeabook-7445mtljf-bhattaraikrish478vercel-gmailcoms-projects.vercel.app",
   /\.vercel\.app$/,
   /\.railway\.app$/,
-  "https://tradeabook-production.up.railway.app"
+  "https://tradeabook-production.up.railway.app",
+  // Add ngrok support
+  /\.ngrok\.io$/,
+  /\.ngrok-free\.app$/,
+  /\.ngrok\.app$/,
+  /\.ngrok\.dev$/,
+  /\.ngrok\.com$/,
+  /\.ngrok\.net$/,
+  /\.ngrok\.org$/
 ];
 
 // Socket.io setup

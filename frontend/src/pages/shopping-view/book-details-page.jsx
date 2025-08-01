@@ -178,168 +178,212 @@ export default function BookDetailsPage() {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-teal-600" />
+          <p className="text-gray-600">Loading book details...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!productDetails) {
-    return <div className="flex justify-center items-center h-screen">Product not found</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+        <div className="text-center">
+          <BookOpen className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Product Not Found</h2>
+          <p className="text-gray-600 mb-4">The book you're looking for doesn't exist or has been removed.</p>
+          <Button onClick={() => navigate("/shop/home")} className="bg-teal-600 hover:bg-teal-700">
+            Back to Home
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Add the ShoppingHeader component */}
+    <div className="min-h-screen bg-gray-50">
       <ShoppingHeader />
 
-      {/* Main content with proper spacing */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-4 pb-16 md:pt-[72px] md:pb-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Book Cover */}
-          <div className="flex justify-center">
-            <div className="w-full bg-gray-50 rounded-lg overflow-hidden shadow-lg">
-              {productDetails?.image ? (
-                <img
-                  src={productDetails.image || "/placeholder-book.jpg"}
-                  alt={productDetails.title || "Book image"}
-                  className="w-full h-auto max-h-[600px] object-cover"
-                  onError={(e) => {
-                    e.target.src = "/placeholder-book.jpg";
-                  }}
-                />
-              ) : (
-                <div className="flex items-center justify-center h-96 bg-gray-100">
-                  <BookOpen className="h-24 w-24 text-gray-300" />
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Book Details */}
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{productDetails.title}</h1>
-              <div className="flex items-center gap-4 mb-4">
-                <span className="text-gray-700">
-                  <strong>Seller:</strong> {productDetails.seller}
-                </span>
-                <Badge
-                  variant="outline"
-                  className={`${
-                    isBiddingEnded
-                      ? "bg-red-50 text-red-600 border-red-200"
-                      : "bg-green-50 text-green-600 border-green-200"
-                  }`}
-                >
-                  <Clock className="h-3.5 w-3.5 mr-1" />
-                  {timeLeft}
-                </Badge>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <strong className="text-gray-900">Description:</strong>
-                <p className="text-gray-700 mt-1">{productDetails.description}</p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <strong className="text-gray-900">Author:</strong>
-                  <p className="text-gray-700">{productDetails.author}</p>
-                </div>
-                <div>
-                  <strong className="text-gray-900">ISBN:</strong>
-                  <p className="text-gray-700">{productDetails.isbn}</p>
-                </div>
-                <div>
-                  <strong className="text-gray-900">Publisher:</strong>
-                  <p className="text-gray-700">{productDetails.publisher}</p>
-                </div>
-                <div>
-                  <strong className="text-gray-900">Publication Date:</strong>
-                  <p className="text-gray-700">{productDetails.publicationDate}</p>
-                </div>
-                <div>
-                  <strong className="text-gray-900">Edition:</strong>
-                  <p className="text-gray-700">{productDetails.edition}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4 pt-4">
-              <div className="bg-teal-50 p-4 rounded-lg">
-                <div className="flex justify-between">
-                  <div>
-                    <strong className="text-gray-900">Starting Bid:</strong>
-                    <p className="text-xl font-bold text-teal-700">Rs. {productDetails.minBid}</p>
-                  </div>
-                  <div>
-                    <strong className="text-gray-900">Current Bid:</strong>
-                    <p className="text-xl font-bold text-teal-700">Rs. {productDetails.currentBid}</p>
-                  </div>
-                </div>
-              </div>
-
-              {!isCurrentUserSeller && !isBiddingEnded && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="bid-amount">Place Your Bid (Rs.)</Label>
-                    <Input
-                      id="bid-amount"
-                      type="number"
-                      value={bidAmount}
-                      onChange={(e) => setBidAmount(e.target.value)}
-                      placeholder="Enter your bid amount..."
-                      min={productDetails.minBid}
-                      step="0.01"
+      {/* Main content with improved spacing */}
+      <main className="pt-16 md:pt-20 pb-20 md:pb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+            
+            {/* Book Image Section */}
+            <div className="order-2 lg:order-1">
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                {productDetails?.image ? (
+                  <div className="aspect-[3/4] relative">
+                    <img
+                      src={productDetails.image}
+                      alt={productDetails.title || "Book cover"}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = "/placeholder-book.jpg";
+                      }}
                     />
-                    {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
                   </div>
-                  <Button onClick={handleSubmitBid} className="w-full bg-teal-600 hover:bg-teal-700">
-                    Submit Bid
-                  </Button>
-                </div>
-              )}
+                ) : (
+                  <div className="aspect-[3/4] flex items-center justify-center bg-gray-100">
+                    <BookOpen className="h-24 w-24 text-gray-300" />
+                  </div>
+                )}
+              </div>
             </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 pt-4">
-          {isCurrentUserSeller ? (
-            <Button
-              onClick={() => navigate("/shop/uploads")}
-              className="bg-teal-600 hover:bg-teal-700"
-            >
-              View My Listings
-            </Button>
-          ) : (
-            <>
-              <Button
-                onClick={handleChatWithSeller}
-                className="bg-green-600 hover:bg-green-700"
-                disabled={isBiddingEnded || isStartingChat}
-              >
-                {isStartingChat ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Starting chat...
-                  </>
+            {/* Book Details Section */}
+            <div className="order-1 lg:order-2 space-y-6">
+              {/* Header */}
+              <div className="space-y-4">
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+                    {productDetails.title}
+                  </h1>
+                  <p className="text-lg text-gray-600 mt-2">
+                    by {productDetails.author}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <span className="font-medium">Seller:</span>
+                    <span>{productDetails.seller}</span>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={`${
+                      isBiddingEnded
+                        ? "bg-red-50 text-red-600 border-red-200"
+                        : "bg-green-50 text-green-600 border-green-200"
+                    }`}
+                  >
+                    <Clock className="h-3.5 w-3.5 mr-1" />
+                    {timeLeft}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Book Information */}
+              <div className="bg-white rounded-lg p-6 shadow-sm border">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Book Details</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-gray-700 leading-relaxed">
+                      {productDetails.description}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t">
+                    <div>
+                      <span className="text-sm font-medium text-gray-500">ISBN</span>
+                      <p className="text-gray-900">{productDetails.isbn}</p>
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium text-gray-500">Publisher</span>
+                      <p className="text-gray-900">{productDetails.publisher}</p>
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium text-gray-500">Publication Date</span>
+                      <p className="text-gray-900">{productDetails.publicationDate}</p>
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium text-gray-500">Edition</span>
+                      <p className="text-gray-900">{productDetails.edition}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bidding Section */}
+              <div className="bg-gradient-to-r from-teal-50 to-blue-50 rounded-lg p-6 border border-teal-100">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Bidding Information</h3>
+                
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="text-center">
+                    <span className="text-sm font-medium text-gray-600">Starting Bid</span>
+                    <p className="text-2xl font-bold text-teal-700">Rs. {productDetails.minBid}</p>
+                  </div>
+                  <div className="text-center">
+                    <span className="text-sm font-medium text-gray-600">Current Bid</span>
+                    <p className="text-2xl font-bold text-teal-700">Rs. {productDetails.currentBid}</p>
+                  </div>
+                </div>
+
+                {!isCurrentUserSeller && !isBiddingEnded && (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="bid-amount" className="text-sm font-medium text-gray-700">
+                        Place Your Bid (Rs.)
+                      </Label>
+                      <Input
+                        id="bid-amount"
+                        type="number"
+                        value={bidAmount}
+                        onChange={(e) => setBidAmount(e.target.value)}
+                        placeholder="Enter your bid amount..."
+                        min={productDetails.minBid}
+                        step="0.01"
+                        className="border-gray-300 focus:border-teal-500 focus:ring-teal-500"
+                      />
+                      {errorMessage && (
+                        <p className="text-red-500 text-sm">{errorMessage}</p>
+                      )}
+                    </div>
+                    <Button 
+                      onClick={handleSubmitBid} 
+                      className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium"
+                    >
+                      Submit Bid
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                {isCurrentUserSeller ? (
+                  <Button
+                    onClick={() => navigate("/shop/uploads")}
+                    className="bg-teal-600 hover:bg-teal-700 text-white font-medium"
+                  >
+                    View My Listings
+                  </Button>
                 ) : (
                   <>
-                    <MessageCircle className="mr-2 h-4 w-4" />
-                    Message Seller
+                    <Button
+                      onClick={handleChatWithSeller}
+                      className="bg-green-600 hover:bg-green-700 text-white font-medium"
+                      disabled={isBiddingEnded || isStartingChat}
+                    >
+                      {isStartingChat ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Starting chat...
+                        </>
+                      ) : (
+                        <>
+                          <MessageCircle className="mr-2 h-4 w-4" />
+                          Message Seller
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      onClick={() => setIsExchangeSidebarOpen(true)}
+                      variant="outline"
+                      className="border-purple-600 text-purple-600 hover:bg-purple-50 font-medium"
+                      disabled={isBiddingEnded}
+                    >
+                      <RefreshCw className="mr-2 h-4 w-4" />
+                      Offer Exchange
+                    </Button>
                   </>
                 )}
-              </Button>
-              <Button
-                onClick={() => setIsExchangeSidebarOpen(true)}
-                variant="outline"
-                className="border-purple-600 text-purple-600 hover:bg-purple-50"
-                disabled={isBiddingEnded}
-              >
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Offer Exchange
-              </Button>
-            </>
-          )}
-        </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
